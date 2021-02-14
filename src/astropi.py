@@ -26,6 +26,27 @@ def generate_mask(image, seuil):
     mask = cv2.dilate(mask, kernel, iterations=3)
     return mask
 
+def detect_object(msk):
+    minx, miny = -1, -1
+    maxx, maxy = -1, -1
+    bolean = False
+    breaker = False
+    for i in range(len(msk)):
+        for x in range(len(msk[i])):
+            if msk[i][x] != 0 and bolean == False:
+                minx = x
+                miny = i
+                bolean = True
+            if msk[i][x] > 0 and bolean == True:
+                maxx = x
+                maxy = i
+                breaker = True
+                break
+        if breaker == True:
+            break
+    start_point = (minx, miny)
+    end_point = (minx + 10, miny + 10)
+    return start_point, end_point
 
 def main(file):
     """Main function."""
@@ -38,6 +59,8 @@ def main(file):
                 continue
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             msk = generate_mask(gray, 10)
+            start_point, end_point = detect_object(msk)
+            gray = cv2.rectangle(gray, start_point, end_point, (255, 0, 0), 2)
             cv2.imshow('video', gray)
             cv2.imshow('mask', msk)
             key = cv2.waitKey(1) & 0xFF
