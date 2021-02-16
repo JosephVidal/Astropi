@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.9
 ##
 ## EPITECH PROJECT, 2020
 ## Astropi
@@ -7,8 +7,10 @@
 ##
 
 from sys import argv, stderr, exit
+from datetime import datetime
 
 import cv2
+import os
 import numpy as np
 
 
@@ -54,6 +56,7 @@ def main(file):
         cap = cv2.VideoCapture()
         cap.open(file)
         while True:
+            now = datetime.now()
             ret, frame = cap.read()
             if not ret:
                 continue
@@ -61,11 +64,13 @@ def main(file):
             msk = generate_mask(gray, 10)
             start_point, end_point = detect_object(msk)
             gray = cv2.rectangle(gray, start_point, end_point, (255, 0, 0), 2)
-            cv2.imshow('video', gray)
+            cv2.imshow('video', frame)
             cv2.imshow('mask', msk)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
+            if key == ord('s'):
+                cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
         cap.release()
         cv2.destroyAllWindows()
     except cv2.error as err:
