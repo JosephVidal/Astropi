@@ -31,23 +31,27 @@ def generate_mask(image, seuil):
 def detect_object(msk):
     minx, miny = -1, -1
     maxx, maxy = -1, -1
-    bolean = False
-    breaker = False
+    lenbool = False
+    heithbool = False
+    voidbool = True
     for i in range(len(msk)):
         for x in range(len(msk[i])):
-            if msk[i][x] != 0 and bolean == False:
-                minx = x
-                miny = i
-                bolean = True
-            if msk[i][x] > 0 and bolean == True:
+            if msk[i][x] != 0:
+                voidbool = False
+                lenbool = True
+                if heithbool != True:
+                    minx = x
+                    miny = i
+                    heithbool = True
+            if msk[i][x] != 255 and lenbool == True:
+                lenbool = False
                 maxx = x
-                maxy = i
-                breaker = True
-                break
-        if breaker == True:
+        if heithbool == True and voidbool == True:
+            maxy = i - 1
             break
-    start_point = (minx, miny)
-    end_point = (minx + 10, miny + 10)
+        voidbool = True
+    start_point = (minx - 1, miny - 1)
+    end_point = (maxx + 1, maxy + 1)
     return start_point, end_point
 
 def main(file):
@@ -63,7 +67,7 @@ def main(file):
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             msk = generate_mask(gray, 10)
             start_point, end_point = detect_object(msk)
-            gray = cv2.rectangle(gray, start_point, end_point, (255, 0, 0), 2)
+            frame = cv2.rectangle(frame, start_point, end_point, (0, 0, 255), 2)
             cv2.imshow('video', frame)
             cv2.imshow('mask', msk)
             key = cv2.waitKey(1) & 0xFF
