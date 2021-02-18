@@ -62,6 +62,9 @@ def main(file):
         while True:
             now = datetime.now()
             ret, frame = cap.read()
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('d'):
+                cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
             if not ret:
                 continue
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -70,7 +73,6 @@ def main(file):
             frame = cv2.rectangle(frame, start_point, end_point, (0, 0, 255), 2)
             cv2.imshow('video', frame)
             cv2.imshow('mask', msk)
-            key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
             if key == ord('s'):
