@@ -59,12 +59,17 @@ def main(file):
     try:
         cap = cv2.VideoCapture()
         cap.open(file)
+        video = False
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
         while True:
             now = datetime.now()
             ret, frame = cap.read()
             key = cv2.waitKey(1) & 0xFF
             if key == ord('d'):
                 cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
+                print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
             if not ret:
                 continue
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -77,6 +82,16 @@ def main(file):
                 break
             if key == ord('s'):
                 cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
+                print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
+            if key == ord('v'):
+                out = cv2.VideoWriter(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi", fourcc, 20.0, (width, height))
+                video = True
+            if key == ord('p'):
+                video = False
+                print("Video saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi")
+            if video:
+                out.write(frame)
+        out.release()
         cap.release()
         cv2.destroyAllWindows()
     except cv2.error as err:
