@@ -61,7 +61,8 @@ def getCommand(var):
         for line in stdin:
             if line.rstrip() == "help":
                 print ("Command executable:\n")
-                print ("\'Screenshoot\' or \'s\':\ttacke a screenshoot.")
+                print ("\'Screenshoot border\' or \'s\':\ttacke a screenshoot with border.")
+                print ("\'Screenshoot\' or \'d\':\ttacke a screenshoot without border.")
                 print ("\'Record\' or \'v\':\tStart a record of a video.")
                 print ("\'Save\' or \'p\':\tSave the record of the video")
                 print ("\'Quite\' or \'Stop\' or \'Exit\':\tExit the programe")
@@ -69,6 +70,8 @@ def getCommand(var):
                 break
             elif line.rstrip() == "Screenshoot" or line.rstrip() == "s":
                 var[0] = 's'
+            elif line.rstrip() == "Screenshoot border" or line.rstrip() == "d":
+                var[0] = 'd'
             elif line.rstrip() == "Record" or line.rstrip() == "v":
                 var[0] = 'v'
             elif line.rstrip() == "Save" or line.rstrip() == "p":
@@ -94,9 +97,11 @@ def main(file):
             now = datetime.now()
             ret, frame = cap.read()
             key = cv2.waitKey(1) & 0xFF
-            # if key == ord('d'):
-            #     cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
-            #     print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
+            print(my_var)
+            if my_var[0] == 'd':
+                my_var[0] = 'l'
+                cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
+                print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
             if not ret:
                 continue
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
