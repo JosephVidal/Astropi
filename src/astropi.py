@@ -16,6 +16,7 @@ import numpy as np
 
 event = Event()
 
+
 def generate_mask(image, seuil):
     """Generate a mask composed by black or white pixels."""
     height, width = image.shape
@@ -29,6 +30,7 @@ def generate_mask(image, seuil):
     mask = cv2.erode(mask, kernel, iterations=1)
     mask = cv2.dilate(mask, kernel, iterations=3)
     return mask
+
 
 def detect_object(msk):
     minx, miny = -1, -1
@@ -56,28 +58,27 @@ def detect_object(msk):
     end_point = (maxx + 1, maxy + 1)
     return start_point, end_point
 
+
 def getCommand(var):
     while True:
         for line in stdin:
             if line.rstrip() == "help":
-                print ("Command executable:\n")
-                print ("\'Screenshoot border\' or \'s\':\ttacke a screenshoot with border.")
-                print ("\'Screenshoot\' or \'d\':\ttacke a screenshoot without border.")
-                print ("\'Record\' or \'v\':\tStart a record of a video.")
-                print ("\'Save\' or \'p\':\tSave the record of the video")
-                print ("\'Quite\' or \'Stop\' or \'Exit\':\tExit the programe")
-            elif line.rstrip() == "Quite" or line.rstrip() == "Stop" or line.rstrip() == "Exit":
+                print("Command executable:\n")
+                print("\'screenshoot border\' or \'s\':\ttacke a screenshoot with border.")
+                print("\'screenshoot\' or \'d\':\t\ttacke a screenshoot without border.")
+                print("\'record\' or \'v\':\t\tStart a record of a video.")
+                print("\'save\' or \'p\':\t\t\tSave the record of the video")
+                print("\'quit\' or \'stop\' or \'exit\':\tExit the programe")
+            elif line.rstrip() == "quit" or line.rstrip() == "stop" or line.rstrip() == "exit":
                 break
-            elif line.rstrip() == "Screenshoot" or line.rstrip() == "s":
+            elif line.rstrip() == "screenshoot" or line.rstrip() == "s":
                 var[0] = 's'
-            elif line.rstrip() == "Screenshoot border" or line.rstrip() == "d":
+            elif line.rstrip() == "screenshoot border" or line.rstrip() == "d":
                 var[0] = 'd'
-            elif line.rstrip() == "Record" or line.rstrip() == "v":
+            elif line.rstrip() == "record" or line.rstrip() == "v":
                 var[0] = 'v'
-            elif line.rstrip() == "Save" or line.rstrip() == "p":
+            elif line.rstrip() == "save" or line.rstrip() == "p":
                 var[0] = 'p'
-            print('Output:', line.rstrip())
-        print("exit, Stop, nnnnnnn")
         break
     var[0] = 'q'
 
@@ -93,11 +94,11 @@ def main(file):
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = False
         while True:
             now = datetime.now()
             ret, frame = cap.read()
             key = cv2.waitKey(1) & 0xFF
-            print(my_var)
             if my_var[0] == 'd':
                 my_var[0] = 'l'
                 cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
@@ -127,7 +128,8 @@ def main(file):
             if video:
                 out.write(frame)
         t.join()
-        out.release()
+        if out:
+            out.release()
         cap.release()
         cv2.destroyAllWindows()
     except cv2.error as err:
