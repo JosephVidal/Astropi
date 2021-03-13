@@ -6,13 +6,15 @@
 ## astropi
 ##
 
-from sys import argv, stderr, exit
+from sys import argv, stderr, exit, stdin
 from datetime import datetime
+from threading import Thread, Event
 
 import cv2
 import os
 import numpy as np
 
+event = Event()
 
 def generate_mask(image, seuil):
     """Generate a mask composed by black or white pixels."""
@@ -54,9 +56,34 @@ def detect_object(msk):
     end_point = (maxx + 1, maxy + 1)
     return start_point, end_point
 
+def getCommand(var):
+    while True:
+        for line in stdin:
+            if line.rstrip() == "help":
+                print ("Command executable:\n")
+                print ("\'Screenshoot\' or \'s\':\ttacke a screenshoot.")
+                print ("\'Record\' or \'v\':\tStart a record of a video.")
+                print ("\'Save\' or \'p\':\tSave the record of the video")
+                print ("\'Quite\' or \'Stop\' or \'Exit\':\tExit the programe")
+            elif line.rstrip() == "Quite" or line.rstrip() == "Stop" or line.rstrip() == "Exit":
+                break
+            elif line.rstrip() == "Screenshoot" or line.rstrip() == "s":
+                var[0] = 's'
+            elif line.rstrip() == "Record" or line.rstrip() == "v":
+                var[0] = 'v'
+            elif line.rstrip() == "Save" or line.rstrip() == "p":
+                var[0] = 'p'
+            print('Output:', line.rstrip())
+        print("exit, Stop, nnnnnnn")
+        break
+    var[0] = 'q'
+
 def main(file):
     """Main function."""
     try:
+        my_var = ['l']
+        t = Thread(target=getCommand, args=(my_var, ))
+        t.start()
         cap = cv2.VideoCapture()
         cap.open(file)
         video = False
@@ -67,9 +94,9 @@ def main(file):
             now = datetime.now()
             ret, frame = cap.read()
             key = cv2.waitKey(1) & 0xFF
-            if key == ord('d'):
-                cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
-                print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
+            # if key == ord('d'):
+            #     cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
+            #     print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
             if not ret:
                 continue
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -77,20 +104,24 @@ def main(file):
             start_point, end_point = detect_object(msk)
             frame = cv2.rectangle(frame, start_point, end_point, (0, 0, 255), 2)
             cv2.imshow('video', frame)
-            cv2.imshow('mask', msk)
-            if key == ord('q'):
+            # cv2.imshow('mask', msk)
+            if my_var[0] == 'q':
                 break
-            if key == ord('s'):
+            if my_var[0] == 's':
+                my_var[0] = 'l'
                 cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
                 print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
-            if key == ord('v'):
+            if my_var[0] == 'v':
+                my_var[0] = 'l'
                 out = cv2.VideoWriter(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi", fourcc, 20.0, (width, height))
                 video = True
-            if key == ord('p'):
+            if my_var[0] == 'p':
+                my_var[0] = 'l'
                 video = False
                 print("Video saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi")
             if video:
                 out.write(frame)
+        t.join()
         out.release()
         cap.release()
         cv2.destroyAllWindows()
