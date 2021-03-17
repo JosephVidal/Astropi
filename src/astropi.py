@@ -64,18 +64,18 @@ def getCommand(var):
         for line in stdin:
             if line.rstrip() == "help":
                 print("Command executable:\n")
-                print("\'screenshoot border\' or \'s\':\ttacke a screenshoot with border.")
-                print("\'screenshoot\' or \'d\':\t\ttacke a screenshoot without border.")
+                print("\'screenshot border\' or \'s\':\ttacke a screenshot with border.")
+                print("\'screenshot\' or \'d\':\t\ttacke a screenshot without border.")
                 print("\'record border\' or \'v\':\t\tStart a record of a video.")
-                print("\'save border\' or \'p\':\t\t\tSave the record of the video")
+                print("\'save border\' or \'p\':\t\tSave the record of the video")
                 print("\'record\' or \'w\':\t\tStart a record of a video.")
                 print("\'save\' or \'x\':\t\t\tSave the record of the video")
                 print("\'quit\' or \'stop\' or \'exit\':\tExit the programe")
             elif line.rstrip() == "quit" or line.rstrip() == "stop" or line.rstrip() == "exit":
                 break
-            elif line.rstrip() == "screenshoot" or line.rstrip() == "s":
+            elif line.rstrip() == "screenshot" or line.rstrip() == "s":
                 var[0] = 's'
-            elif line.rstrip() == "screenshoot border" or line.rstrip() == "d":
+            elif line.rstrip() == "screenshot border" or line.rstrip() == "d":
                 var[0] = 'd'
             elif line.rstrip() == "record border" or line.rstrip() == "v":
                 var[0] = 'v'
@@ -120,7 +120,7 @@ def main(file):
                 print("Video saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi")
             elif my_var[0] == 'x':
                 my_var[0] = 'l'
-                print("No record without border launch.");
+                print("No record without border launch.")
             if video_without_border:
                 out.write(frame)
             if not ret:
@@ -147,7 +147,7 @@ def main(file):
                 print("Video saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi")
             elif my_var[0] == 'p' :
                 my_var[0] = 'l'
-                print("No record with border launch.");
+                print("No record with border launch.")
             if video:
                 out.write(frame)
         t.join()
