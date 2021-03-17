@@ -66,8 +66,10 @@ def getCommand(var):
                 print("Command executable:\n")
                 print("\'screenshoot border\' or \'s\':\ttacke a screenshoot with border.")
                 print("\'screenshoot\' or \'d\':\t\ttacke a screenshoot without border.")
-                print("\'record\' or \'v\':\t\tStart a record of a video.")
-                print("\'save\' or \'p\':\t\t\tSave the record of the video")
+                print("\'record border\' or \'v\':\t\tStart a record of a video.")
+                print("\'save border\' or \'p\':\t\t\tSave the record of the video")
+                print("\'record\' or \'w\':\t\tStart a record of a video.")
+                print("\'save\' or \'x\':\t\t\tSave the record of the video")
                 print("\'quit\' or \'stop\' or \'exit\':\tExit the programe")
             elif line.rstrip() == "quit" or line.rstrip() == "stop" or line.rstrip() == "exit":
                 break
@@ -75,10 +77,14 @@ def getCommand(var):
                 var[0] = 's'
             elif line.rstrip() == "screenshoot border" or line.rstrip() == "d":
                 var[0] = 'd'
-            elif line.rstrip() == "record" or line.rstrip() == "v":
+            elif line.rstrip() == "record border" or line.rstrip() == "v":
                 var[0] = 'v'
-            elif line.rstrip() == "save" or line.rstrip() == "p":
+            elif line.rstrip() == "save border" or line.rstrip() == "p":
                 var[0] = 'p'
+            elif line.rstrip() == "record" or line.rstrip() == "w":
+                var[0] = 'w'
+            elif line.rstrip() == "save" or line.rstrip() == "x":
+                var[0] = 'x'
         break
     var[0] = 'q'
 
@@ -91,6 +97,7 @@ def main(file):
         cap = cv2.VideoCapture()
         cap.open(file)
         video = False
+        video_without_border = False
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) + 0.5)
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) + 0.5)
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -103,6 +110,19 @@ def main(file):
                 my_var[0] = 'l'
                 cv2.imwrite(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif", frame)
                 print("Image saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".tif")
+            if my_var[0] == 'w':
+                my_var[0] = 'l'
+                out = cv2.VideoWriter(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi", fourcc, 20.0, (width, height))
+                video_without_border = True
+            if my_var[0] == 'x' and video_without_border == True:
+                my_var[0] = 'l'
+                video_without_border = False
+                print("Video saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi")
+            elif my_var[0] == 'x':
+                my_var[0] = 'l'
+                print("No record without border launch.");
+            if video_without_border:
+                out.write(frame)
             if not ret:
                 continue
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -121,10 +141,13 @@ def main(file):
                 my_var[0] = 'l'
                 out = cv2.VideoWriter(os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi", fourcc, 20.0, (width, height))
                 video = True
-            if my_var[0] == 'p':
+            if my_var[0] == 'p' and video == True:
                 my_var[0] = 'l'
                 video = False
                 print("Video saved as " + os.environ.get('HOME') + "/Desktop/" + now.strftime("%d.%m.%Y-%H:%M:%S") + ".avi")
+            elif my_var[0] == 'p' :
+                my_var[0] = 'l'
+                print("No record with border launch.");
             if video:
                 out.write(frame)
         t.join()
